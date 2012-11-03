@@ -5,11 +5,11 @@ if(!defined("IN_MYBB"))
 }
 
 //ACP Hooks
-$plugins->add_hook("admin_forum_menu", "nl_admin_forum_menu");
-$plugins->add_hook("admin_forum_action_handler", "nl_admin_forum_action_handler");
-$plugins->add_hook("admin_forum_permissions", "nl_admin_forum_permissions");
+$plugins->add_hook("admin_forum_menu", "newsletter_admin_forum_menu");
+$plugins->add_hook("admin_forum_action_handler", "newsletter_admin_forum_action_handler");
+$plugins->add_hook("admin_forum_permissions", "newsletter_admin_forum_permissions");
 
-function nl_info()
+function newsletter_info()
 {
 	return array(
 		"name"			=> "Newsletter",
@@ -24,7 +24,7 @@ function nl_info()
 }
 
 /*
-function nl_install()
+function newsletter_install()
 {
 	global $db;
 
@@ -34,57 +34,57 @@ function nl_install()
 	) ENGINE=MyISAM {$col}");
 }
 
-function nl_is_installed()
+function newsletter_is_installed()
 {
 	global $db;
 	return $db->table_exists("newsletter");
 }
 
-function nl_uninstall()
+function newsletter_uninstall()
 {
     global $db;
 	$db->drop_table("newsletter");
 } */
 
-function nl_activate()
+function newsletter_activate()
 {
 	require MYBB_ROOT."inc/adminfunctions_templates.php";
 }
 
-function nl_deactivate()
+function newsletter_deactivate()
 {
 	require MYBB_ROOT."inc/adminfunctions_templates.php";
 }
 
 
-function nl_admin_forum_menu($sub_menu)
+function newsletter_admin_forum_menu($sub_menu)
 {
 	global $lang;
 
-//	$lang->load("newsletter");
+	$lang->load("newsletter");
 
-	$sub_menu[] = array("id" => "nl", "title" => "NL", "link" => "index.php?module=forum-nl");
+	$sub_menu[] = array("id" => "newsletter", "title" => $lang->newsletter, "link" => "index.php?module=forum-newsletter");
 
 	return $sub_menu;
 }
 
-function nl_admin_forum_action_handler($actions)
+function newsletter_admin_forum_action_handler($actions)
 {
-	$actions['nl'] = array(
-		"active" => "nl",
-		"file" => "nl.php"
+	$actions['newsletter'] = array(
+		"active" => "newsletter",
+		"file" => "newsletter.php"
 	);
 
 	return $actions;
 }
 
-function nl_admin_forum_permissions($admin_permissions)
+function newsletter_admin_forum_permissions($admin_permissions)
 {
 	global $lang;
 
-//	$lang->load("newsletter");
+	$lang->load("newsletter");
 
-	$admin_permissions['nl'] = "NL";
+	$admin_permissions['newsletter'] = $lang->newsletter_permissions;
 
 	return $admin_permissions;
 }
