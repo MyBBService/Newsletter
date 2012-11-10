@@ -33,4 +33,6 @@ $l['newsletter_added'] = "Newsletter gespeichert";
 $l['newsletter_deleted'] = "Newsletter gel&ouml;scht";
 
 $l['newsletter_edited'] = "Newsletter bearbeitet";
+
+$l['newsletter_sent'] = "Newsletter wurde zum Versenden freigegeben";
 ?>

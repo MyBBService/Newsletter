@@ -13,6 +13,9 @@ $plugins->add_hook("admin_forum_permissions", "newsletter_admin_forum_permission
 $plugins->add_hook("usercp_options_end", "newsletter_ucp");
 $plugins->add_hook("datahandler_user_update", "newsletter_ucp_handler");
 
+//Global Hook
+$plugins->add_hook("global_start", "newsletter_add_shutdown");
+
 function newsletter_info()
 {
 	return array(
@@ -57,6 +60,15 @@ function newsletter_install()
 				`created` bigint(30) NOT NULL default '0',
 				`sent` bigint(30) NOT NULL default '0',
 	PRIMARY KEY (`id`) ) ENGINE=MyISAM {$col}");
+
+	$db->query("CREATE TABLE `".TABLE_PREFIX."newsletter_mailqueue` (
+				`mid` int(10) NOT NULL AUTO_INCREMENT,
+				`mailto` varchar(200) NOT NULL default '',
+				`mailfrom` varchar(200) NOT NULL default '0',
+				`subject` varchar(100) NOT NULL default '',
+				`html` text NOT NULL default '',
+				`plain` text NOT NULL default '',
+	PRIMARY KEY (`mid`) ) ENGINE=MyISAM {$col}");
 }
 
 function newsletter_is_installed()
@@ -71,6 +83,7 @@ function newsletter_uninstall()
     $db->delete_query("templates", "title='usercp_options_newsletter'");
 	$db->drop_column('users', 'receive_newsletter');
 	$db->drop_table("newsletter");
+	$db->drop_table("newsletter_mailqueue");
 }
 
 function newsletter_activate()
@@ -139,5 +152,53 @@ function newsletter_ucp_handler($user)
 	global $mybb;
 	$user->user_update_data['receive_newsletter'] = $mybb->input['receive_newsletter'];
 	return $user;
+}
+
+function newsletter_prepare_send($nid)
+{
+	global $db;
+	
+	$query = $db->simple_select("newsletter", "subject, html, plain, override_receive", "id='{$nid}'");
+	$newsletter = $db->fetch_array($query);
+	
+	$db->update_query("newsletter", array("sent" => TIME_NOW), "id='{$nid}'");
+	
+	$where = "";
+    if(!$newsletter['override_receive'])
+		$where = "receive_newsletter='1'";
+	$uquery = $db->simple_select("users", "email", $where);
+	
+	$queue_array = array(
+		"mailfrom" => "",
+		"subject" => $newsletter['subject'],
+		"html" => $newsletter['html'],
+		"plain" => $newsletter['plain']
+	);
+	while($user = $db->fetch_array($uquery)) {
+		$queue_array['mailto'] = $user['email'];
+		$db->insert_query("newsletter_mailqueue", $queue_array);
+	}
+}
+
+function newsletter_send()
+{
+	global $db;
+
+	$query = $db->simple_select("newsletter_mailqueue", "*", "", array("limit" => "10"));
+	if($db->num_rows($query) > 0) {
+		while($email = $db->fetch_array($query)) {
+			$db->delete_query("newsletter_mailqueue", "mid='{$email['mid']}'");
+			
+			if($email['html'] != "")
+				my_mail($email['mailto'], $email['subject'], $email['html'], $email['mailfrom'], "", "", false, "html", $email['plain']);
+			else
+				my_mail($email['mailto'], $email['subject'], $email['plain'], $email['mailfrom']);
+		}
+	}
+}
+
+function newsletter_add_shutdown()
+{
+	add_shutdown("newsletter_send");
 }
 ?>
