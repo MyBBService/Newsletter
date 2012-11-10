@@ -35,19 +35,18 @@ if($mybb->input['action'] == "do_add") {
 	}
 
 	if(!isset($errors)) {
-		$sent = 0;
-		if($mybb->input['send'])
-		    $sent = TIME_NOW;
 
 		$insert = array(
 			"subject" => $db->escape_string($mybb->input['subject']),
 			"html" => $db->escape_string($mybb->input['html']),
 			"plain" => $db->escape_string($mybb->input['plain']),
 			"override_receive" => $db->escape_string($mybb->input['override_receive']),
-			"created" => TIME_NOW,
-			"sent" => $sent
+			"created" => TIME_NOW
 		);
-		$db->insert_query("newsletter", $insert);
+		$id = $db->insert_query("newsletter", $insert);
+
+		if($mybb->input['send'])
+			newsletter_prepare_send($id);
 
 		flash_message($lang->newsletter_added, 'success');
 		admin_redirect("index.php?module=forum-newsletter");
@@ -101,6 +100,17 @@ if($mybb->input['action'] == "add") {
 	$buttons[] = $form->generate_reset_button($lang->reset);
 	$form->output_submit_wrapper($buttons);
 	$form->end();
+}
+if($mybb->input['action'] == "send") {
+	if(!strlen(trim($mybb->input['id'])))
+	{
+		flash_message($lang->newsletter_no_id, 'error');
+		admin_redirect("index.php?module=forum-newsletter");
+	}
+	$id=(int)$mybb->input['id'];
+	newsletter_prepare_send($id);	
+	flash_message($lang->newsletter_sent, 'success');
+	admin_redirect("index.php?module=forum-newsletter");
 }
 if($mybb->input['action'] == "do_edit") {
 	if(!strlen(trim($mybb->input['id'])))
