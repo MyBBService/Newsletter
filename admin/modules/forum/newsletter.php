@@ -35,7 +35,6 @@ if($mybb->input['action'] == "do_add") {
 	}
 
 	if(!isset($errors)) {
-
 		$insert = array(
 			"subject" => $db->escape_string($mybb->input['subject']),
 			"html" => $db->escape_string($mybb->input['html']),
@@ -160,18 +159,16 @@ if($mybb->input['action'] == "do_edit") {
 	}
 
 	if(!isset($errors)) {
-		$sent = 0;
-		if($mybb->input['send'])
-		    $sent = TIME_NOW;
-
 		$update = array(
 			"subject" => $db->escape_string($mybb->input['subject']),
 			"html" => $db->escape_string($mybb->input['html']),
 			"plain" => $db->escape_string($mybb->input['plain']),
-			"override_receive" => $db->escape_string($mybb->input['override_receive']),
-			"sent" => $sent
+			"override_receive" => $db->escape_string($mybb->input['override_receive'])
 		);
 		$db->update_query("newsletter", $update, "id='{$id}'");
+
+		if($mybb->input['send'])
+			newsletter_prepare_send($id);
 
 		flash_message($lang->newsletter_edited, 'success');
 		admin_redirect("index.php?module=forum-newsletter");

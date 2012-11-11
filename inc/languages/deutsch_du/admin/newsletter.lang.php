@@ -1,8 +1,8 @@
 <?php
 $l['newsletter'] = "Newsletter";
 $l['newsletter_permissions'] = "Kann Newsletter verwalten?";
-$l['newsletter_no_id'] = "Es wurde keine ID &uuml;bermittelt";
-$l['newsletter_wrong_id'] = "Es wurde eine fehlerhafte ID &uuml;bermittelt";
+$l['newsletter_no_id'] = "Es wurde keine ID übermittelt";
+$l['newsletter_wrong_id'] = "Es wurde eine fehlerhafte ID übermittelt";
 $l['newsletter_already_sent'] = "Dieser Newsletter wurde bereits verschickt";
 
 $l['list'] = "Liste";
@@ -15,7 +15,7 @@ $l['sent'] = "Newsletter bereits versendet?";
 $l['send'] = "Senden";
 
 $l['override_receive'] = "Newsletter an alle senden?";
-$l['override_receive_desc'] = "Dies &uuml;berschreibt die Einstellung der User im UCP";
+$l['override_receive_desc'] = "Dies überschreibt die Einstellung der User im UCP";
 $l['override_receive_not'] = "Interner Fehler [1]";
 $l['subject'] = "Titel";
 $l['subject_desc'] = "Der Titel des Newsletters";
@@ -30,7 +30,7 @@ $l['send_not'] = "Interner Fehler [2]";
 $l['submit'] = "Speichern";
 $l['newsletter_added'] = "Newsletter gespeichert";
 
-$l['newsletter_deleted'] = "Newsletter gel&ouml;scht";
+$l['newsletter_deleted'] = "Newsletter gelöscht";
 
 $l['newsletter_edited'] = "Newsletter bearbeitet";
 

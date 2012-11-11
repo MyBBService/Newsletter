@@ -170,9 +170,9 @@ function newsletter_prepare_send($nid)
 	
 	$queue_array = array(
 		"mailfrom" => "",
-		"subject" => $newsletter['subject'],
-		"html" => $newsletter['html'],
-		"plain" => $newsletter['plain']
+		"subject" => $db->escape_string($newsletter['subject']),
+		"html" => $db->escape_string($newsletter['html']),
+		"plain" => $db->escape_string($newsletter['plain'])
 	);
 	while($user = $db->fetch_array($uquery)) {
 		$queue_array['mailto'] = $user['email'];
