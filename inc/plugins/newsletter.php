@@ -26,7 +26,7 @@ function newsletter_info()
 		"authorsite"	=> "http://mybbservice.de/",
 		"version"		=> "1.0",
 		"guid" 			=> "",
-		"compatibility" => "16*"
+		"compatibility" => "16*, 17*"
 	);
 }
 
