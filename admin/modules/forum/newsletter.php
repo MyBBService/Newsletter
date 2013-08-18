@@ -5,7 +5,12 @@ if(!defined("IN_MYBB"))
 	exit;
 }
 
-$page->add_breadcrumb_item($lang->newsletter, "index.php?module=forum-newsletter");
+if(function_exists("mybbservice_info"))
+    define(MODULE, "mybbservice-newsletter");
+else
+    define(MODULE, "forum-newsletter");
+
+$page->add_breadcrumb_item($lang->newsletter, "index.php?module=".MODULE);
 
 if($mybb->input['action'] == "do_add") {
 	if(!verify_post_check($mybb->input['my_post_key']))
@@ -48,12 +53,12 @@ if($mybb->input['action'] == "do_add") {
 			newsletter_prepare_send($id);
 
 		flash_message($lang->newsletter_added, 'success');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	} else
 		$mybb->input['action'] = "add";
 }
 if($mybb->input['action'] == "add") {
-	$page->add_breadcrumb_item($lang->add, "index.php?module=forum-newsletter&action=add");
+	$page->add_breadcrumb_item($lang->add, "index.php?module=".MODULE."&action=add");
 	$page->output_header($lang->add);
 	generate_tabs("add");
 	
@@ -73,7 +78,7 @@ if($mybb->input['action'] == "add") {
 	}
 
 
-	$form = new Form("index.php?module=forum-newsletter&amp;action=do_add", "post");
+	$form = new Form("index.php?module=".MODULE."&amp;action=do_add", "post");
 	$form_container = new FormContainer($lang->add);
 
 	$fid = "override_receive";
@@ -104,32 +109,32 @@ if($mybb->input['action'] == "send") {
 	if(!strlen(trim($mybb->input['id'])))
 	{
 		flash_message($lang->newsletter_no_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$id=(int)$mybb->input['id'];
 	newsletter_prepare_send($id);	
 	flash_message($lang->newsletter_sent, 'success');
-	admin_redirect("index.php?module=forum-newsletter");
+	admin_redirect("index.php?module=".MODULE);
 }
 if($mybb->input['action'] == "do_edit") {
 	if(!strlen(trim($mybb->input['id'])))
 	{
 		flash_message($lang->newsletter_no_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$id=(int)$mybb->input['id'];
 	$query = $db->simple_select("newsletter", "sent", "id='{$id}'");
 	if($db->num_rows($query) != 1)
 	{
 		flash_message($lang->newsletter_wrong_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$nl = $db->fetch_array($query);
 
 	if($nl['sent'] != 0)
 	{
 		flash_message($lang->newsletter_already_sent, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 
    	if(!verify_post_check($mybb->input['my_post_key']))
@@ -171,7 +176,7 @@ if($mybb->input['action'] == "do_edit") {
 			newsletter_prepare_send($id);
 
 		flash_message($lang->newsletter_edited, 'success');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	} else
 		$mybb->input['action'] = "edit";
 }
@@ -179,24 +184,24 @@ if($mybb->input['action'] == "edit") {
 	if(!strlen(trim($mybb->input['id'])))
 	{
 		flash_message($lang->newsletter_no_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$id=(int)$mybb->input['id'];
 	$query = $db->simple_select("newsletter", "*", "id='{$id}'");
 	if($db->num_rows($query) != 1)
 	{
 		flash_message($lang->newsletter_wrong_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$nl = $db->fetch_array($query);
 
 	if($nl['sent'] != 0)
 	{
 		flash_message($lang->newsletter_already_sent, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 
-	$page->add_breadcrumb_item($lang->edit, "index.php?module=forum-newsletter&action=edit&id={$id}");
+	$page->add_breadcrumb_item($lang->edit, "index.php?module=".MODULE."&action=edit&id={$id}");
 	$page->output_header($lang->edit);
 	generate_tabs("edit");
 
@@ -216,7 +221,7 @@ if($mybb->input['action'] == "edit") {
 	}
 
 
-	$form = new Form("index.php?module=forum-newsletter&amp;action=do_edit", "post");
+	$form = new Form("index.php?module=".MODULE."&amp;action=do_edit", "post");
 	$form_container = new FormContainer($lang->edit);
 
 	$fid = "override_receive";
@@ -248,12 +253,12 @@ if($mybb->input['action'] == "delete") {
 	if(!strlen(trim($mybb->input['id'])))
 	{
 		flash_message($lang->newsletter_no_id, 'error');
-		admin_redirect("index.php?module=forum-newsletter");
+		admin_redirect("index.php?module=".MODULE);
 	}
 	$id=(int)$mybb->input['id'];
 	$db->delete_query("newsletter", "id='{$id}'");
 	flash_message($lang->newsletter_deleted, 'success');
-	admin_redirect("index.php?module=forum-newsletter");
+	admin_redirect("index.php?module=".MODULE);
 }
 if(!isset($mybb->input['action']) || $mybb->input['action'] == ""){
 	$page->output_header($lang->newsletter);
@@ -297,10 +302,10 @@ if(!isset($mybb->input['action']) || $mybb->input['action'] == ""){
 
 			$popup = new PopupMenu("nl_".$nl['id'], $lang->options);
 			if($nl['sent'] == 0) {
-				$popup->add_item($lang->send, "index.php?module=forum-newsletter&amp;action=send&amp;id={$nl['id']}");
-				$popup->add_item($lang->edit, "index.php?module=forum-newsletter&amp;action=edit&amp;id={$nl['id']}");
+				$popup->add_item($lang->send, "index.php?module=".MODULE."&amp;action=send&amp;id={$nl['id']}");
+				$popup->add_item($lang->edit, "index.php?module=".MODULE."&amp;action=edit&amp;id={$nl['id']}");
 			}
-			$popup->add_item($lang->delete, "index.php?module=forum-newsletter&amp;action=delete&amp;id={$nl['id']}");
+			$popup->add_item($lang->delete, "index.php?module=".MODULE."&amp;action=delete&amp;id={$nl['id']}");
 			$table->construct_cell($popup->fetch(), array("class"=>"align_center"));
 
 			$table->construct_row();
@@ -321,12 +326,12 @@ function generate_tabs($selected)
 	$sub_tabs = array();
 	$sub_tabs['list'] = array(
 		'title' => $lang->list,
-		'link' => "index.php?module=forum-newsletter",
+		'link' => "index.php?module=".MODULE,
 		'description' => $lang->list_desc
 	);
 	$sub_tabs['add'] = array(
 		'title' => $lang->add,
-		'link' => "index.php?module=forum-newsletter&amp;action=add",
+		'link' => "index.php?module=".MODULE."&amp;action=add",
 		'description' => $lang->add_desc
 	);
 

@@ -4,10 +4,19 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
+global $cache;
+if(!isset($pluginlist))
+    $pluginlist = $cache->read("plugins");
+
 //ACP Hooks
-$plugins->add_hook("admin_forum_menu", "newsletter_admin_forum_menu");
-$plugins->add_hook("admin_forum_action_handler", "newsletter_admin_forum_action_handler");
-$plugins->add_hook("admin_forum_permissions", "newsletter_admin_forum_permissions");
+if(is_array($pluginlist['active']) && in_array("mybbservice", $pluginlist['active'])) {
+	$plugins->add_hook("mybbservice_actions", "newsletter_mybbservice_actions");
+	$plugins->add_hook("mybbservice_permission", "newsletter_admin_forum_permissions");
+} else {
+	$plugins->add_hook("admin_forum_menu", "newsletter_admin_forum_menu");
+	$plugins->add_hook("admin_forum_action_handler", "newsletter_admin_forum_action_handler");
+	$plugins->add_hook("admin_forum_permissions", "newsletter_admin_forum_permissions");
+}
 
 //UCP Hooks
 $plugins->add_hook("usercp_options_end", "newsletter_ucp");
@@ -24,9 +33,10 @@ function newsletter_info()
 		"website"		=> "http://mybbservice.de/",
 		"author"		=> "MyBBService",
 		"authorsite"	=> "http://mybbservice.de/",
-		"version"		=> "1.0",
+		"version"		=> "1.0.1",
 		"guid" 			=> "",
-		"compatibility" => "16*, 17*"
+		"compatibility" => "16*",
+		"dlcid"			=> "21"
 	);
 }
 
@@ -98,6 +108,26 @@ function newsletter_deactivate()
 	find_replace_templatesets("usercp_options", "#".preg_quote('{$receive_newsletter}')."#i", "", 0);
 }
 
+
+function newsletter_mybbservice_actions($actions)
+{
+	global $page, $lang, $info;
+	$lang->load("newsletter");
+
+	$actions['newsletter'] = array(
+		"active" => "newsletter",
+		"file" => "../forum/newsletter.php"
+	);
+
+	$sub_menu = array();
+	$sub_menu['10'] = array("id" => "newsletter", "title" => $lang->newsletter, "link" => "index.php?module=mybbservice-newsletter");
+	$sidebar = new SidebarItem($lang->newsletter);
+	$sidebar->add_menu_items($sub_menu, $actions[$info]['active']);
+
+	$page->sidebar .= $sidebar->get_markup();
+
+	return $actions;
+}
 
 function newsletter_admin_forum_menu($sub_menu)
 {
