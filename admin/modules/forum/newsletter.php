@@ -12,6 +12,35 @@ else
 
 $page->add_breadcrumb_item($lang->newsletter, "index.php?module=".MODULE);
 
+if($mybb->input['action'] == "abos") {
+	$page->output_header($lang->abos);
+	generate_tabs("abos");
+
+	$table = new Table;
+
+	$query = $db->simple_select("users", "*", "receive_newsletter='1'", array("order_by"=>"username", "order_dir"=>"DESC"));
+	if($db->num_rows($query) > 0)
+	{
+		$ucount = 0;
+		while($user = $db->fetch_array($query)) {
+			$ucount++;
+
+			$table->construct_cell($user['username']);
+
+			if($ucount == 5) {
+				$ucount = 0;
+				$table->construct_row();
+			}
+		}
+		if($ucount != 0) {
+			$table->construct_row();
+		}
+	} else {
+		$table->construct_cell($lang->no_abos, array('class' => 'align_center', 'colspan' => 5));
+		$table->construct_row();
+	}
+	$table->output($lang->sprintf($lang->abos_header, $db->num_rows($query)));	
+}
 if($mybb->input['action'] == "do_add") {
 	if(!verify_post_check($mybb->input['my_post_key']))
 	{
@@ -333,6 +362,11 @@ function generate_tabs($selected)
 		'title' => $lang->add,
 		'link' => "index.php?module=".MODULE."&amp;action=add",
 		'description' => $lang->add_desc
+	);
+	$sub_tabs['abos'] = array(
+		'title' => $lang->abos,
+		'link' => "index.php?module=".MODULE."&amp;action=abos",
+		'description' => $lang->abos_desc
 	);
 
 	$page->output_nav_tabs($sub_tabs, $selected);

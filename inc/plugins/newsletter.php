@@ -33,7 +33,7 @@ function newsletter_info()
 		"website"		=> "http://mybbservice.de/",
 		"author"		=> "MyBBService",
 		"authorsite"	=> "http://mybbservice.de/",
-		"version"		=> "1.0.1",
+		"version"		=> "1.1",
 		"guid" 			=> "",
 		"compatibility" => "16*",
 		"dlcid"			=> "21"

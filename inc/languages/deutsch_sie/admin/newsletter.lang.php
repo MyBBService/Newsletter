@@ -9,6 +9,11 @@ $l['list'] = "Liste";
 $l['list_desc'] = "Hier sehen Sie alle bisher verfassten Newsletter";
 $l['add'] = "Neuen Newsletter verfassen";
 $l['add_desc'] = "Hier können Sie einen neuen Newsletter verfassen";
+$l['abos'] = "Abonnenten angucken";
+$l['abos_desc'] = "Hier können Sie sehen, wer den Newsletter abonniert hat";
+
+$l['no_abos'] = "Bisher wurde Ihr Newsletter nicht abonniert";
+$l['abos_header'] = "Insgesamt {1} Abonnenten";
 
 $l['no_newsletter'] = "Bisher wurden keine Newsletter erstellt.";
 $l['sent'] = "Newsletter bereits versendet?";

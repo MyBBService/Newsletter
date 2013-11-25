@@ -9,6 +9,11 @@ $l['list'] = "List";
 $l['list_desc'] = "Here you see all the previously written Newsletter";
 $l['add'] = "Write a new newsletter";
 $l['add_desc'] = "Here you can write a new newsletter";
+$l['abos'] = "View subscriptions";
+$l['abos_desc'] = "Here you can see all subscriptions";
+
+$l['no_abos'] = "Nobody has subscribed to your newsletter";
+$l['abos_header'] = "{1} Subscriptions";
 
 $l['no_newsletter'] = "There are no newsletter";
 $l['sent'] = "Newsletter already sent?";
