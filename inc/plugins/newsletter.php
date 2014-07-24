@@ -6,7 +6,7 @@ if(!defined("IN_MYBB"))
 
 global $cache;
 if(!isset($pluginlist))
-    $pluginlist = $cache->read("plugins");
+	$pluginlist = $cache->read("plugins");
 
 //ACP Hooks
 if(is_array($pluginlist['active']) && in_array("mybbservice", $pluginlist['active'])) {
@@ -33,9 +33,9 @@ function newsletter_info()
 		"website"		=> "http://mybbservice.de/",
 		"author"		=> "MyBBService",
 		"authorsite"	=> "http://mybbservice.de/",
-		"version"		=> "1.1",
+		"version"		=> "1.1.1",
 		"guid" 			=> "",
-		"compatibility" => "16*",
+		"compatibility" => "*",
 		"dlcid"			=> "21"
 	);
 }
@@ -52,11 +52,11 @@ function newsletter_install()
 <td valign=\"top\" width=\"1\"><input type=\"checkbox\" class=\"checkbox\" name=\"receive_newsletter\" id=\"receive_newsletter\" value=\"1\" {\$receive_newsletter_check} /></td>
 <td><span class=\"smalltext\"><label for=\"receive_newsletter\">{\$lang->receive_newsletter}</label></span></td>";
 	$templatearray = array(
-	        "title" => "usercp_options_newsletter",
-	        "template" => $template,
-	        "sid" => "-2",
-	        );
-    $db->insert_query("templates", $templatearray);
+		"title" => "usercp_options_newsletter",
+		"template" => $template,
+		"sid" => "-2",
+	);
+	$db->insert_query("templates", $templatearray);
 
 	$db->add_column('users', 'receive_newsletter', "int(1) NOT NULL default '0'");
 
@@ -64,8 +64,8 @@ function newsletter_install()
 	$db->query("CREATE TABLE `".TABLE_PREFIX."newsletter` (
 				`id` int(11) NOT NULL AUTO_INCREMENT,
 				`subject` varchar(100) NOT NULL default '',
-				`html` text NOT NULL default '',
-				`plain` text NOT NULL default '',
+				`html` text NOT NULL,
+				`plain` text NOT NULL,
 				`override_receive` boolean NOT NULL default '0',
 				`created` bigint(30) NOT NULL default '0',
 				`sent` bigint(30) NOT NULL default '0',
@@ -76,8 +76,8 @@ function newsletter_install()
 				`mailto` varchar(200) NOT NULL default '',
 				`mailfrom` varchar(200) NOT NULL default '0',
 				`subject` varchar(100) NOT NULL default '',
-				`html` text NOT NULL default '',
-				`plain` text NOT NULL default '',
+				`html` text NOT NULL,
+				`plain` text NOT NULL,
 	PRIMARY KEY (`mid`) ) ENGINE=MyISAM {$col}");
 }
 
@@ -89,8 +89,8 @@ function newsletter_is_installed()
 
 function newsletter_uninstall()
 {
-    global $db;
-    $db->delete_query("templates", "title='usercp_options_newsletter'");
+	global $db;
+	$db->delete_query("templates", "title='usercp_options_newsletter'");
 	$db->drop_column('users', 'receive_newsletter');
 	$db->drop_table("newsletter");
 	$db->drop_table("newsletter_mailqueue");
@@ -187,17 +187,17 @@ function newsletter_ucp_handler($user)
 function newsletter_prepare_send($nid)
 {
 	global $db;
-	
+
 	$query = $db->simple_select("newsletter", "subject, html, plain, override_receive", "id='{$nid}'");
 	$newsletter = $db->fetch_array($query);
-	
+
 	$db->update_query("newsletter", array("sent" => TIME_NOW), "id='{$nid}'");
-	
+
 	$where = "";
-    if(!$newsletter['override_receive'])
+	if(!$newsletter['override_receive'])
 		$where = "receive_newsletter='1'";
 	$uquery = $db->simple_select("users", "email", $where);
-	
+
 	$queue_array = array(
 		"mailfrom" => "",
 		"subject" => $db->escape_string($newsletter['subject']),
@@ -218,7 +218,7 @@ function newsletter_send()
 	if($db->num_rows($query) > 0) {
 		while($email = $db->fetch_array($query)) {
 			$db->delete_query("newsletter_mailqueue", "mid='{$email['mid']}'");
-			
+
 			if($email['html'] != "")
 				my_mail($email['mailto'], $email['subject'], $email['html'], $email['mailfrom'], "", "", false, "html", $email['plain']);
 			else
